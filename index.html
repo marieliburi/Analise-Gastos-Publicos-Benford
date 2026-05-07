@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Análise de Empenho</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="header-container">
+            <h1>Análise de Empenho Ourinhos</h1>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="upload-card">
+            <h2>Auditoria de Empenho</h2>
+            <p>Carregue o CSV da sua cidade para validar dados e identificar anomalias estatísticas com a Lei de
+                Benford.</p>
+
+            <div class="drop-zone" id="drop-zone">
+                <div id="drop-zone-content">
+                    <i class="fas fa-file-upload"></i>
+                    <span class="drop-label">Arraste seu arquivo aqui</span>
+                    <span class="drop-sublabel">Formatos aceitos: .csv, .xls ou .xlsx</span>
+                </div>
+                <input type="file" id="file-input" hidden accept=".csv, .xlsx, .xls">
+            </div>
+
+            <!-- Area para botão de enviar -->
+            <div id="action-area" style="margin-top: 20px; min-height: 50px;">
+            </div>
+
+            <button id="btn-selecionar-inicial" class="btn-upload"
+                onclick="document.getElementById('file-input').click()">
+                SELECIONAR ARQUIVO
+            </button>
+            <script src="script.js"></script>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        &copy; 2026 - Ferramenta de Análise de Gastos Públicos
+    </footer>
+
+</body>
+
+</html>
