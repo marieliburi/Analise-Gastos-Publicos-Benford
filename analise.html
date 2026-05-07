@@ -1,0 +1,78 @@
+<!-- dashboard.html simples -->
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Auditoria - Ourinhos</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Análise de Gastos Públicos</h1>
+    </header>
+    <main>
+        <!-- Cartões de Resumo -->
+        <div class="cards-container">
+            <div class="card">
+                <h3>Total Gasto (Ourinhos)</h3>
+                <p id="total-gasto">R$ 0,00</p>
+            </div>
+            <div class="card">
+                <h3>Registros Analisados</h3>
+                <p id="total-registros">0</p>
+            </div>
+        </div>
+
+        <!-- Espaço para o Gráfico de Benford -->
+        <div class="chart-container" style="width: 80%; margin: auto;">
+            <canvas id="graficoBenford"></canvas>
+        </div>
+    </main>
+
+    <!-- Importante: Biblioteca para desenhar o gráfico -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    const dados = JSON.parse(localStorage.getItem('dadosAnalise'));
+
+    if (dados) {
+        // Preenche os textos
+        document.getElementById('total-gasto').innerText =
+            new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(dados.total_valor);
+        document.getElementById('total-registros').innerText = dados.qtd_registros;
+
+        // DESENHA O GRÁFICO DE BENFORD
+        const ctx = document.getElementById('graficoBenford').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dados.labels,
+                datasets: [{
+                    label: 'Frequência Real (Ourinhos)',
+                    data: dados.real,
+                    backgroundColor: '#15803d'
+                }, {
+                    label: 'Lei de Benford (Teórica)',
+                    data: dados.teorica,
+                    type: 'line',
+                    borderColor: '#16a34a',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Porcentagem (%)' } }
+                }
+            }
+        });
+    } else {
+        alert("Nenhum dado encontrado. Faça o upload novamente.");
+        window.location.href = 'index.html';
+    }
+</script>
+</body>
+
+</html>

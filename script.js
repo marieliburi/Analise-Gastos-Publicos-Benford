@@ -73,4 +73,41 @@ function exibirNomeArquivo(arquivo) {
     };
 
     dropZone.style.borderColor = "#15803d";
+
+    // Evento de clique real para processar os dados
+document.getElementById('btn-enviar').onclick = async function() {
+    const btn = document.getElementById('btn-enviar');
+    btn.innerHTML = 'PROCESSANDO... <i class="fas fa-spinner fa-spin"></i>';
+    btn.disabled = true;
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    try {
+        // Envia para o servidor Python
+        const response = await fetch('http://127.0.0.1:5000/analisar', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const erroData = await response.json();
+            throw new Error(erroData.error || 'Erro no servidor');
+        }
+
+        const data = await response.json();
+        
+        // GUARDA OS DADOS NA MOCHILA
+        localStorage.setItem('dadosAnalise', JSON.stringify(data));
+
+        // AGORA SIM, MUDA DE PÁGINA
+        window.location.href = 'analise.html'; 
+
+    } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro ao analisar dados de Ourinhos: " + error.message);
+        btn.innerHTML = 'TENTAR NOVAMENTE <i class="fas fa-arrow-right"></i>';
+        btn.disabled = false;
+    }
+};
 }
