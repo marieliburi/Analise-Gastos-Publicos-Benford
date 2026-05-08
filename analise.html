@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style-dash.css">
 </head>
+
 <body>
 
     <div class="dashboard-wrapper">
@@ -32,10 +34,41 @@
                 <p id="total-registros">0</p>
             </div>
         </div>
-
+        <!--Gráfico 1 - Primeiro digito-->
         <div class="chart-container">
             <canvas id="graficoBenford"></canvas>
         </div>
+
+        <!--Grafico 2 - Segundo digito-->
+        <div class="tabela-container">
+            <h3>Tabela 2 - Probabilidades do 1° e 2° Dígito(Teórico vs Real)</h3>
+            <table class="benford-table" id="tabelaConjunta">
+                <thead>
+                    <tr id="header-d2">
+                        <th>1° \ 2°</th>
+                        <!-- Colunas 0-9 serão inseridas aqui -->
+                    </tr>
+                </thead>
+                <tbody id="body-conjunto">
+                    <!-- Linhas 1-9 serão inseridas aqui -->
+                </tbody>
+            </table>
+            <div class="legenda-tabela">
+                <div class="legenda-item">
+                    <span class="cor-amostra teorica"></span>
+                    <span>Probabilidade Teórica (Lei de Benford)</span>
+                </div>
+                <div class="legenda-item">
+                    <span class="cor-amostra real"></span>
+                    <span>Frequência Real (Dados de Ourinhos)</span>
+                </div>
+                <div class="legenda-item">
+                    <span class="cor-amostra alerta"></span>
+                    <span>Desvio significativo detectado</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -112,6 +145,65 @@
         } else {
             window.location.href = 'index.html';
         }
+
+        /*Parte 2° da tabela*/
+        /*Parte 2° da tabela - Corrigida*/
+        const tableBody = document.getElementById('body-conjunto');
+        const tableHeader = document.getElementById('header-d2');
+
+        if (dados && dados.tabela_conjunta) {
+            // 1. Limpa e reconstrói o cabeçalho d2 (0-9)
+            tableHeader.innerHTML = '<th>1° \\ 2°</th>';
+            for (let i = 0; i <= 9; i++) {
+                let th = document.createElement('th');
+                th.innerText = i;
+                tableHeader.appendChild(th);
+            }
+
+            tableBody.innerHTML = ''; // Limpa o corpo antes de preencher
+
+            // 2. Criar linhas d1 (1-9)
+            dados.tabela_conjunta.forEach((linha, idx) => {
+                let d1 = idx + 1;
+                let tr = document.createElement('tr');
+
+                let tdTitle = document.createElement('td');
+                tdTitle.innerHTML = `<b>${d1}</b>`;
+                tdTitle.style.backgroundColor = '#f8fafc';
+                tr.appendChild(tdTitle);
+
+                linha.forEach(celula => {
+                    let td = document.createElement('td');
+
+                    // Pegamos os valores garantindo o nome correto das chaves vindo do Python
+                    // Verificamos 'teorico' e 'teorica' por segurança
+                    const valTeorico = celula.teorico !== undefined ? celula.teorico : celula.teorica;
+                    const valReal = celula.real;
+
+                    const realFormatado = valReal.toFixed(4).replace('.', ',');
+                    const teoricoFormatado = valTeorico.toFixed(4).replace('.', ',');
+
+                    td.innerHTML = `
+                <div class="celula-info">
+                    <span class="val-real">${realFormatado}</span>
+                    <span class="val-teorico">T: ${teoricoFormatado}</span>
+                </div>
+            `;
+
+                    // LÓGICA DE ALERTA: Se a diferença absoluta for maior que 0.01 (1%)
+                    //---------------------------------------------------------------
+                    if (Math.abs(valTeorico - valReal) > 0.01) {
+                        // Forçamos a cor de fundo e uma borda suave para o alerta aparecer
+                        td.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
+                        td.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                    }
+
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            });
+        }
     </script>
 </body>
+
 </html>

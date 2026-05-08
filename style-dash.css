@@ -119,3 +119,104 @@ body {
     .card p { font-size: 1.6rem; }
     .chart-container { padding: 20px; }
 }
+
+/*Tabela do 2° digito*/
+/* --- PARTE 2: TABELA DE PROBABILIDADES CONJUNTAS --- */
+
+.tabela-container {
+    background: var(--glass-bg);
+    padding: 30px;
+    border-radius: 20px;
+    margin-top: 30px;
+    overflow-x: auto;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.benford-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: center;
+    background-color: white;
+}
+
+.benford-table th, .benford-table td {
+    border: 1px solid #e2e8f0;
+    padding: 12px 8px;
+}
+
+.benford-table th {
+    background-color: var(--primary-green);
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+/* Estilização dos números dentro das células */
+.celula-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+/* VALOR REAL: Agora é o destaque principal (Verde e Grande) */
+.val-real { 
+    color: var(--primary-green); 
+    font-weight: 800; 
+    font-size: 1rem; 
+    display: block;
+}
+
+/* VALOR TEÓRICO: Agora é secundário (Cinza e Pequeno) */
+.val-teorico { 
+    color: #94a3b8; 
+    font-size: 0.7rem; 
+    font-weight: 500;
+    display: block;
+}
+
+/* --- LEGENDA DA TABELA --- */
+
+.legenda-tabela {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #475569;
+}
+
+.cor-amostra {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Cores da legenda seguindo a nova hierarquia */
+.cor-amostra.real { 
+    background-color: var(--primary-green); 
+}
+
+.cor-amostra.teorica { 
+    background-color: #94a3b8; 
+}
+
+.cor-amostra.alerta { 
+    background-color: rgba(239, 68, 68, 0.15); 
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
