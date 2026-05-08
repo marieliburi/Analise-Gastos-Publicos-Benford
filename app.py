@@ -8,49 +8,54 @@ CORS(app)
 
 def calcular_distribuicao_benford(df):
     """
-    Realiza a limpeza profunda e extração estatística (1º e 2º dígitos) para Ourinhos.
+    Processa os dados de Ourinhos: limpa colunas, realiza análise de Benford
+    e agrupa gastos por Função.
     """
-    # 1. Identificar e limpar nomes de colunas
-    df.columns = [str(c).strip() for c in df.columns]
-    colunas_foco = ['Valor Total', 'valor', 'Valor', 'VALOR', 'pago', 'empenhado', 'Valor_Total']
-    coluna_valor = next((c for c in colunas_foco if c in df.columns), None)
+    # 1. Limpeza de cabeçalhos (remove espaços e o caractere invisível \ufeff)
+    df.columns = [str(c).strip().replace('\ufeff', '') for c in df.columns]
+    
+    # Identificar colunas alvo baseadas no seu CSV
+    colunas_valor_alvo = ['Valor Total', 'Valor', 'VALOR', 'valor']
+    coluna_valor = next((c for c in colunas_valor_alvo if c in df.columns), None)
+
+    colunas_funcao_alvo = ['Função', 'FUNÇÃO', 'funcao', 'Funcao', 'Classificação Funcional']
+    coluna_funcao = next((c for c in colunas_funcao_alvo if c in df.columns), None)
 
     if not coluna_valor:
-        cols_num = df.select_dtypes(include=[np.number]).columns
-        if len(cols_num) > 0:
-            coluna_valor = cols_num[0]
-        else:
-            return None, "Não foi possível encontrar uma coluna de valores."
+        return None, "Não foi possível encontrar a coluna de valores (ex: 'Valor Total')."
 
-    # 2. Limpeza Numérica (Transforma texto em número real)
+    # 2. Limpeza Numérica (Trata R$, pontos de milhar e vírgula decimal)
     try:
         coluna_limpa = (
             df[coluna_valor].astype(str)
             .str.replace('R$', '', regex=False)
             .str.replace('.', '', regex=False)
             .str.replace(',', '.', regex=False)
+            .str.replace('"', '', regex=False)
             .str.strip()
         )
         valores = pd.to_numeric(coluna_limpa, errors='coerce')
-        valores_vivos = valores[valores > 0].dropna()
+        
+        # Para Benford, usamos o valor absoluto (transforma negativos em positivos)
+        df['valor_limpo'] = valores.abs()
+        df_vivos = df[df['valor_limpo'] > 0].dropna(subset=['valor_limpo'])
+        valores_vivos = df_vivos['valor_limpo']
     except Exception as e:
-        return None, f"Erro na conversão: {str(e)}"
+        return None, f"Erro na conversão numérica: {str(e)}"
 
     if valores_vivos.empty:
-        return None, "A coluna não contém números válidos após a limpeza."
+        return None, "Nenhum valor numérico válido encontrado para análise."
 
-    # Prepara os números como strings limpas (sem pontos ou zeros à esquerda)
+    # Prepara strings para análise de dígitos
     v_str = valores_vivos.astype(str).str.replace(r'[^0-9]', '', regex=True).str.lstrip('0')
 
-    # 3. Análise do Primeiro Dígito (Gráfico 1)
+    # 3. Análise do Primeiro Dígito
     d1_series = v_str.str[0].dropna()
     d1_counts = pd.to_numeric(d1_series, errors='coerce').value_counts(normalize=True).sort_index() * 100
-    
     real_d1 = d1_counts.reindex(range(1, 10), fill_value=0).tolist()
     teorica_d1 = [np.log10(1 + 1/d) * 100 for d in range(1, 10)]
 
-    # 4. Análise do Segundo Dígito (Gráfico 2)
-    # Pegamos apenas números com pelo menos 2 dígitos
+    # 4. Análise do Segundo Dígito
     v_str_2 = v_str[v_str.str.len() >= 2]
     if not v_str_2.empty:
         d2_series = v_str_2.str[1]
@@ -58,43 +63,46 @@ def calcular_distribuicao_benford(df):
         real_d2 = d2_counts.reindex(range(10), fill_value=0).tolist()
     else:
         real_d2 = [0] * 10
-        
-    teorica_d2 = []
-    for d2 in range(10):
-        p_d2 = sum(np.log10(1 + 1/(10*d1 + d2)) for d1 in range(1, 10)) * 100
-        teorica_d2.append(p_d2)
+    
+    teorica_d2 = [sum(np.log10(1 + 1/(10*d1 + d2)) for d1 in range(1, 10)) * 100 for d2 in range(10)]
 
     # 5. Tabela de Probabilidades Conjuntas (Matriz 9x10)
     tabela_conjunta = []
     for d1 in range(1, 10):
         linha = []
         for d2 in range(10):
-            # Teórico
             prob_teorica = np.log10(1 + 1 / (10 * d1 + d2))
-            
-            # Real nos dados de Ourinhos
             comeca_com = f"{d1}{d2}"
             contagem_real = v_str.str.startswith(comeca_com).sum()
             percentual_real = (contagem_real / len(valores_vivos))
-            
             linha.append({
                 "teorico": round(prob_teorica, 4),
                 "real": round(percentual_real, 4)
             })
         tabela_conjunta.append(linha)
 
-    # UM ÚNICO RETURN com tudo organizado
+    # 6. Gastos por Função (Top 10)
+    gastos_por_funcao = None
+    if coluna_funcao:
+        agrupado = df_vivos.groupby(coluna_funcao)['valor_limpo'].sum().sort_values(ascending=False)
+        top_10 = agrupado.head(10)
+        gastos_por_funcao = {
+            "labels": top_10.index.tolist(),
+            "valores": top_10.values.tolist()
+        }
+
     return {
         "coluna_usada": coluna_valor,
         "total_valor": float(valores_vivos.sum()),
         "qtd_registros": int(len(valores_vivos)),
         "labels": list(range(1, 10)),
-        "real": real_lista if 'real_lista' in locals() else real_d1, # Fallback
+        "real": real_d1,
         "teorica": teorica_d1,
         "labels_d2": list(range(10)),
         "real_d2": real_d2,
         "teorica_d2": teorica_d2,
-        "tabela_conjunta": tabela_conjunta
+        "tabela_conjunta": tabela_conjunta,
+        "gastos_por_funcao": gastos_por_funcao
     }, None
 
 @app.route('/analisar', methods=['POST'])
@@ -104,8 +112,9 @@ def analisar():
     
     file = request.files['file']
     try:
+        # utf-8-sig lida com o caractere BOM automaticamente
         if file.filename.endswith('.csv'):
-            df = pd.read_csv(file, sep=None, engine='python', on_bad_lines='skip')
+            df = pd.read_csv(file, sep=None, engine='python', encoding='utf-8-sig', on_bad_lines='skip')
         else:
             df = pd.read_excel(file)
 
@@ -118,5 +127,5 @@ def analisar():
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    print("--- Servidor de Auditoria de Ourinhos Iniciado ---")
+    print("--- Servidor de Auditoria Ourinhos Ativo ---")
     app.run(debug=True, port=5000)
