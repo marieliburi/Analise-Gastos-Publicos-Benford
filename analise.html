@@ -1,78 +1,117 @@
-<!-- dashboard.html simples -->
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Auditoria - Ourinhos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style-dash.css">
 </head>
-
 <body>
-    <header>
-        <h1>Análise de Gastos Públicos</h1>
-    </header>
-    <main>
-        <!-- Cartões de Resumo -->
+
+    <div class="dashboard-wrapper">
+        <a href="index.html" class="btn-voltar">
+            <i class="fas fa-arrow-left"></i> Nova Auditoria
+        </a>
+
+        <div class="title-section">
+            <h1>Painel de Auditoria</h1>
+            <p>Identificação de anomalias estatísticas via Lei de Benford</p>
+        </div>
+
         <div class="cards-container">
             <div class="card">
-                <h3>Total Gasto (Ourinhos)</h3>
+                <i class="fas fa-coins"></i>
+                <h3>Total Gasto Analisado</h3>
                 <p id="total-gasto">R$ 0,00</p>
             </div>
             <div class="card">
-                <h3>Registros Analisados</h3>
+                <i class="fas fa-file-invoice-dollar"></i>
+                <h3>Volume de Registros</h3>
                 <p id="total-registros">0</p>
             </div>
         </div>
 
-        <!-- Espaço para o Gráfico de Benford -->
-        <div class="chart-container" style="width: 80%; margin: auto;">
+        <div class="chart-container">
             <canvas id="graficoBenford"></canvas>
         </div>
-    </main>
-
-    <!-- Importante: Biblioteca para desenhar o gráfico -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </div>
 
     <script>
-    const dados = JSON.parse(localStorage.getItem('dadosAnalise'));
+        const dados = JSON.parse(localStorage.getItem('dadosAnalise'));
 
-    if (dados) {
-        // Preenche os textos
-        document.getElementById('total-gasto').innerText =
-            new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(dados.total_valor);
-        document.getElementById('total-registros').innerText = dados.qtd_registros;
+        if (dados) {
+            // Preenchimento dos cards
+            document.getElementById('total-gasto').innerText =
+                new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(dados.total_valor);
+            document.getElementById('total-registros').innerText = dados.qtd_registros.toLocaleString('pt-BR');
 
-        // DESENHA O GRÁFICO DE BENFORD
-        const ctx = document.getElementById('graficoBenford').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: dados.labels,
-                datasets: [{
-                    label: 'Frequência Real (Ourinhos)',
-                    data: dados.real,
-                    backgroundColor: '#15803d'
-                }, {
-                    label: 'Lei de Benford (Teórica)',
-                    data: dados.teorica,
-                    type: 'line',
-                    borderColor: '#16a34a',
-                    borderWidth: 2,
-                    fill: false
-                }]
-            },
-            options: {
-                scales: {
-                    y: { beginAtZero: true, title: { display: true, text: 'Porcentagem (%)' } }
+            const ctx = document.getElementById('graficoBenford').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dados.labels,
+                    datasets: [{
+                        label: 'Frequência Real (Ourinhos)',
+                        data: dados.real,
+                        backgroundColor: 'rgba(27, 67, 50, 0.8)', // Azul Escuro (Slate-800)
+                        hoverBackgroundColor: 'rgba(27, 67, 50, 0.9)',
+                        borderRadius: 10,
+                        borderWidth: 0,
+                        barPercentage: 0.6
+                    }, {
+                        label: 'Lei de Benford (Teórica)',
+                        data: dados.teorica,
+                        type: 'line',
+                        borderColor: '#e3230e', // Cor da linha do gráfico
+                        borderWidth: 4,
+                        pointBackgroundColor: '#e3230e',
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        tension: 0.4,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: { family: 'Segoe UI', size: 12, weight: 'bold' }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'DISTRIBUIÇÃO DO PRIMEIRO DÍGITO',
+                            align: 'start',
+                            color: '#1e293b',
+                            font: { size: 16, weight: 'bold' },
+                            padding: { bottom: 30 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { callback: value => value + '%' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            title: { display: true, text: 'Primeiro Dígito Significativo' }
+                        }
+                    }
                 }
-            }
-        });
-    } else {
-        alert("Nenhum dado encontrado. Faça o upload novamente.");
-        window.location.href = 'index.html';
-    }
-</script>
+            });
+        } else {
+            window.location.href = 'index.html';
+        }
+    </script>
 </body>
-
 </html>

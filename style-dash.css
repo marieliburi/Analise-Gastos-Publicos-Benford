@@ -1,0 +1,121 @@
+:root {
+    /* Paleta Verde Auditoria */
+    --primary-green: #1b4332;    /* Verde Esmeralda Escuro */
+    --medium-green: #398562;     /* Verde Vibrante */
+    --light-green: #ecfdf5;      /* Fundo suave */
+    --accent-red: #ef4444;       /* Vermelho para a linha de alerta */
+    --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    --glass-bg: rgba(255, 255, 255, 0.95);
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg-gradient);
+    color: #1e293b;
+    margin: 0;
+    padding: 40px 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.dashboard-wrapper {
+    max-width: 1100px;
+    width: 100%;
+}
+
+.title-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.title-section h1 {
+    font-size: 2.2rem;
+    color: var(--primary-green);
+    margin: 0;
+    font-weight: 800;
+}
+
+.title-section p {
+    color: #475569;
+    margin-top: 8px;
+    font-size: 1.1rem;
+}
+
+/* Cartões */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 35px;
+}
+
+.card {
+    background: var(--glass-bg);
+    padding: 30px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(6, 95, 70, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(6, 95, 70, 0.12);
+}
+
+.card i {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: var(--medium-green);
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #64748b;
+}
+
+.card p {
+    margin: 12px 0 0 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-green);
+}
+
+/* Container do Gráfico */
+.chart-container {
+    background: var(--glass-bg);
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.5);
+    margin-bottom: 40px;
+}
+
+.btn-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 28px;
+    background: var(--primary-green);
+    color: white;
+    text-decoration: none;
+    border-radius: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 25px;
+}
+
+.btn-voltar:hover {
+    background: #064e3b;
+    transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+    .card p { font-size: 1.6rem; }
+    .chart-container { padding: 20px; }
+}

@@ -1,7 +1,6 @@
-/* Configurações Gerais e Variáveis */
 :root {
-    --primary-green: #15803d; /* Verde escuro para confiança */
-    --accent-green: #22c55e;  /* Verde vibrante para ações */
+    --primary-green: #1b4332; /* Verde escuro para confiança */
+    --accent-green: #398562;  /* Verde vibrante para ações */
     --bg-light: #f8fafc;      /* Fundo levemente acinzentado */
     --text-main: #1e293b;
     --text-muted: #64748b;
@@ -16,8 +15,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-
-    background-image: url('/home/mari/Documentos/Fatec-2026/Benford-site/Foto-ourinhos-2024.jpg');
+    background-image: url('Foto-ourinhos-2024.jpg');    
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -27,8 +25,13 @@ body {
 .site-header {
     background-color: var(--primary-green);
     color: white;
-    padding: 1.5rem 2rem;
+    padding: 1.2rem 2rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: sticky;      /* Faz o menu "grudar" no topo */
+    top: 0;                /* Define que ele gruda na posição zero (topo) */
+    z-index: 1000;         /* Garante que o menu fique por cima de tudo */
+    width: 100%;           /* Garante que ele ocupe toda a largura */
+    box-sizing: border-box;
 }
 
 .header-container {
@@ -152,7 +155,7 @@ body {
 }
 
 .btn-upload:hover {
-    background-color: #166534;
+    background-color: #398562;
 }
 
 /* Footer do Site */

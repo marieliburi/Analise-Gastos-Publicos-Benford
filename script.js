@@ -42,12 +42,12 @@ function exibirNomeArquivo(arquivo) {
     // 1. Atualiza o conteúdo da zona de drop
     dropContent.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-            <i class="fas ${icone}" style="color: #15803d; font-size: 3.5rem;"></i>
+            <i class="fas ${icone}" style="color: #398562; font-size: 3.5rem;"></i>
             <p style="margin: 10px 0 5px 0; font-size: 1.1rem; color: #1e293b;">
                 <strong>Arquivo carregado:</strong><br>
                 <span style="word-break: break-all;">${nome}</span>
             </p>
-            <span style="color: #16a34a; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; justify-content: center;">
+            <span style="color: #398562; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; justify-content: center;">
                 <i class="fas fa-check-circle"></i> Pronto para análise
             </span>
         </div>
@@ -62,7 +62,7 @@ function exibirNomeArquivo(arquivo) {
     // 3. MOSTRAR o novo botão de envio na action-area
     const actionArea = document.getElementById('action-area');
     actionArea.innerHTML = `
-        <button id="btn-enviar" class="btn-upload" style="width: 100%; background-color: #15803d; animation: fadeIn 0.5s ease;">
+        <button id="btn-enviar" class="btn-upload" style="width: 100%; background-color: #398562; animation: fadeIn 0.5s ease;">
             ENVIAR <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
         </button>
     `;
@@ -72,7 +72,7 @@ function exibirNomeArquivo(arquivo) {
         window.location.href = 'analise.html'; 
     };
 
-    dropZone.style.borderColor = "#15803d";
+    dropZone.style.borderColor = "#398562";
 
     // Evento de clique real para processar os dados
 document.getElementById('btn-enviar').onclick = async function() {
