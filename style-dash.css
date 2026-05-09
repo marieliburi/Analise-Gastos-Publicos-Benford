@@ -71,6 +71,18 @@ body {
     color: var(--medium-green);
 }
 
+/* Classe para reduzir a fonte em números gigantes */
+.fonte-pequena {
+    font-size: 1.6rem !important; /* Ajuste conforme necessário */
+}
+
+/* Garante que o parágrafo do valor não quebre o card */
+.card p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    transition: font-size 0.3s ease; /* Transição suave ao mudar o tamanho */
+}
+
 .card h3 {
     margin: 0;
     font-size: 0.85rem;

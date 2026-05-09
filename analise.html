@@ -33,6 +33,11 @@
                 <h3>Volume de Registros</h3>
                 <p id="total-registros">0</p>
             </div>
+            <div class="card">
+                <i class="fas fa-calendar-alt"></i>
+                <h3>Período Analisado</h3>
+                <p id="periodo-analise">---</p>
+            </div>
         </div>
 
         <!-- Gráfico 1 - Primeiro digito -->
@@ -45,7 +50,7 @@
             <!-- Título da Tabela Padronizado via CSS Inline para alinhar com os gráficos -->
             <h3
                 style="text-align: center; color: #1e293b; font-size: 16px; font-weight: bold; margin-bottom: 30px; text-transform: uppercase;">
-                Tabela 2 - Probabilidades do 1° e 2° Dígito (Teórico vs Real)
+                Probabilidades do 1° e 2° Dígito (Teórico vs Real)
             </h3>
             <table class="benford-table" id="tabelaConjunta">
                 <thead>
@@ -76,15 +81,35 @@
             <canvas id="graficoFuncoes"></canvas>
         </div>
 
+        <!--Gráfico 4 - Gastos por Sazonidade-->
+        <div class="chart-container" style="margin-top: 50px;">
+            <canvas id="graficoSazonalidade"></canvas>
+        </div>
     </div>
 
     <script>
         const dados = JSON.parse(localStorage.getItem('dadosAnalise'));
 
         if (dados) {
-            document.getElementById('total-gasto').innerText =
-                new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(dados.total_valor);
+            const elementoTotal = document.getElementById('total-gasto');
+            const valorTotal = dados.total_valor;
+
+            // Formatação em Moeda Brasileira
+            elementoTotal.innerText = new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(valorTotal);
+
+            // Ajuste dinâmico de fonte: 1 milhão ou mais
+            if (valorTotal >= 100000000) {
+                elementoTotal.classList.add('fonte-pequena');
+            } else {
+                elementoTotal.classList.remove('fonte-pequena');
+            }
+
+            // Preenchimento dos outros cards
             document.getElementById('total-registros').innerText = dados.qtd_registros.toLocaleString('pt-BR');
+            document.getElementById('periodo-analise').innerText = dados.periodo || "Não identificado";
 
             // --- GRÁFICO 1: BENFORD ---
             const ctx = document.getElementById('graficoBenford').getContext('2d');
@@ -169,7 +194,7 @@
                             legend: { display: false },
                             title: {
                                 display: true,
-                                text: 'GASTOS POR FUNÇÃO (OURINHOS)',
+                                text: 'GASTOS POR FUNÇÃO',
                                 align: 'center', // PADRONIZADO CENTRALIZADO
                                 color: '#1e293b',
                                 font: { size: 16, weight: 'bold' },
@@ -219,6 +244,58 @@
                     tableBody.appendChild(tr);
                 });
             }
+
+            // --- GRÁFICO 4: SAZONALIDADE ---
+            if (dados.gastos_por_mes) {
+                const ctxSazonal = document.getElementById('graficoSazonalidade').getContext('2d');
+                new Chart(ctxSazonal, {
+                    type: 'line',
+                    data: {
+                        labels: dados.gastos_por_mes.labels,
+                        datasets: [{
+                            label: 'Total Mensal (R$)',
+                            data: dados.gastos_por_mes.valores,
+                            borderColor: '#10b981', // Verde
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)', // Preenchimento leve
+                            fill: true,
+                            tension: 0.4, // Curva suave
+                            pointRadius: 4,
+                            pointBackgroundColor: '#10b981'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 8, // Bolinha pequena e padronizada
+                                    boxHeight: 8,
+                                    font: { weight: 'bold' }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'EVOLUÇÃO MENSAL DOS GASTOS (SAZONALIDADE)',
+                                align: 'center',
+                                color: '#1e293b',
+                                font: { size: 16, weight: 'bold' },
+                                padding: { bottom: 30 }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { callback: value => 'R$ ' + value.toLocaleString('pt-BR') }
+                            }
+                        }
+                    }
+                });
+            }
+            document.getElementById('periodo-analise').innerText = dados.periodo || "N/A";
         } else {
             window.location.href = 'index.html';
         }
