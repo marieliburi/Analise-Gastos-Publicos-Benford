@@ -85,10 +85,10 @@ function exibirNomeArquivo(arquivo) {
 
         try {
             // Envia para o servidor Python
-            const response = await fetch('/analisar', {
+            const response = await fetch('http://127.0.0.1:5000/analisar', {
                 method: 'POST',
                 body: formData
-            })
+            });
 
             if (!response.ok) {
                 const erroData = await response.json();
