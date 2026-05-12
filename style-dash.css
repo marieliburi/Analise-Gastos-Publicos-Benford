@@ -232,3 +232,59 @@ body {
     background-color: rgba(239, 68, 68, 0.15); 
     border: 1px solid rgba(239, 68, 68, 0.4);
 }
+
+
+
+.pizza-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid #f1f5f9;
+    margin: 20px 0;
+    transition: transform 0.3s ease;
+}
+
+.pizza-card:hover {
+    transform: translateY(-5px);
+}
+
+.pizza-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 15px;
+}
+
+.pizza-header h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    font-weight: 700;
+    margin: 0;
+}
+
+.pizza-header .badge {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.pizza-content {
+    display: flex;
+    align-items: center; /* Junta verticalmente */
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 550px;
+}
+
+.canvas-wrapper {
+    flex: 1;
+    max-width: 550px; /* Controla o tamanho da pizza diretamente */
+    position: relative;
+}
+

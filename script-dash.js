@@ -208,6 +208,76 @@ if (dados) {
     }
     document.getElementById('periodo-analise').innerText = dados.periodo || "N/A";
 
+    if (dados.gastos_janeiro_funcao) {
+        const ctxJan = document.getElementById('graficoJaneiro').getContext('2d');
+
+        new Chart(ctxJan, {
+            type: 'pie',
+            data: {
+                labels: dados.gastos_janeiro_funcao.labels,
+                datasets: [{
+                    data: dados.gastos_janeiro_funcao.valores,
+                    backgroundColor: [
+                        '#065513', // Verde Neon (Vibrante)
+                        '#008f30', // Esmeralda Profundo
+                        '#22c55e', // Verde Sucesso (Bootstrap/Tailwind)
+                        '#a3e635', // Lima Limão
+                        '#166534', // Verde Floresta Intenso
+                        '#00ff00', // Verde Puro High-Contrast
+                        '#10b981', // Aquamarine
+                        '#84cc16', // Verde Oliva Vivo
+                        '#059669', // Verde Maré
+                        '#b2e75d'  // Chá Verde (Para o menor gasto)
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    // Aumentamos o radius para a pizza aparecer bem
+                    radius: '100%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                // Removemos os paddings do layout
+                layout: {
+                    padding: 0
+                },
+                plugins: {
+                    legend: {
+                        position: 'right', // Coloca a legenda ao lado para economizar altura
+                        align: 'center',
+                        labels: {
+                            boxWidth: 8,
+                            boxHeight: 8,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 15,
+                            font: {
+                                size: 11,
+                                family: 'Inter, sans-serif'
+                            },
+                            color: '#475569'
+                        }
+                    },
+                    title: {
+                        display: false // Título já está no HTML (mais bonito)
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            label: function (context) {
+                                let val = context.parsed.toLocaleString('pt-BR');
+                                return ` R$ ${val}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     //TESTES Z e QUI
     if (dados.valores_z) {
         const headerZ = document.getElementById('header-z');
